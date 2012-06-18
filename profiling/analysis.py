@@ -1,4 +1,4 @@
-''' 
+'''
 Created on 15/06/2012
 
 @author: Alfonso Kim
@@ -6,6 +6,7 @@ Created on 15/06/2012
 
 import sys, os
 import numpy
+from datetime import datetime
 import matplotlib.pyplot as plt
 
 # ==================================================================
@@ -38,7 +39,7 @@ class Spec():
     
     def label(self):
         ''' '''
-        return 'Min:%.2f Max:%.2f' % (self.min_n, self.max_n)
+        return '%s\nMin:%.2f Max:%.2f' % (self.legend(), self.min_n, self.max_n)
 
 
 # ==================================================================
@@ -48,7 +49,9 @@ def read_file(file_path, eval_code):
     ''' Lee un archivo y devuelve su representacion para la grafica
         @param file_path: Ruta al archivo
     '''
+    sys.stdout.write('Procesando %s' % file_path)
     in_file = open(os.path.abspath(file_path), 'r')
+    start = datetime.now()
     first_line = in_file.readline()
     spec = first_line if first_line.strip()[0] == '#' else file_path
     data = [float(eval(eval_code)) for s in in_file]
@@ -56,6 +59,7 @@ def read_file(file_path, eval_code):
         s = first_line
         data.insert(0, float(eval(eval_code)))
     sorted_data = sorted(data)
+    sys.stdout.write('\rProcesando %s en %i segundos\n' % (file_path, (datetime.now() - start).seconds))
     return Spec(x=sorted_data,
                 spec=spec, 
                 average=numpy.average(data), 
