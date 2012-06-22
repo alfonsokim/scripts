@@ -58,6 +58,8 @@ def read_file(file_path, eval_code):
     if spec == file_path:
         s = first_line
         data.insert(0, float(eval(eval_code)))
+    else:
+        spec = spec.strip().replace('"', '').replace('#', '').replace(' ', '')
     sorted_data = sorted(data)
     sys.stdout.write('\rProcesando %s en %i segundos\n' % (file_path, (datetime.now() - start).seconds))
     return Spec(x=sorted_data,
@@ -76,14 +78,21 @@ def analysis(files, options):
     ''' '''
     specs = [read_file(file, options.eval) for file in files]
     for spec in specs:
-        n, bins, patches = plt.hist(spec.x, facecolor='green', alpha=0.75, label=spec.label())
+        n, bins, patches = plt.hist(spec.x, facecolor='b', alpha=0.5, label=spec.label())
+        for c, rectangle in enumerate(patches):
+            plt.text(rectangle.get_x(), 
+                     rectangle.get_y()+rectangle.get_height(), 
+                     '%i\%.2f' % (n[c], bins[c]),
+                     color='r',
+                     rotation='vertical')
         plt.xlabel('Milisegundos')
         plt.ylabel('Frecuencia')
         plt.title(spec.spec)
-        plt.text(1, 1-spec.max_n, spec.legend())
+        #plt.text(1, 1-spec.max_n, spec.legend())
         plt.grid(True)
         plt.legend()
         plt.savefig('%s.png' % spec.spec.split('.')[0])
+        #plt.savefig('joe.png')
         #plt.show()
 
 # ===================================================================
